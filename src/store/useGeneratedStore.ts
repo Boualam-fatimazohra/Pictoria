@@ -22,8 +22,19 @@ const useGeneratedStore = create<GenerateState>((set) => ({
     const toastId = toast.loading("Generating image...")
 
     try {
+      console.log("generating image");
       const { error, success, data } = await generateImageAction(values);
+      console.log(
+        "image generation finished!, success: ",
+        success,
+        " data: ",
+        data,
+        " error: ",
+        error
+      );
+
       if (!success) {
+        toast.error(`Generate image failed. Problem: ${error || "Unknown error"}`);
         set({ error: error, loading: false });
         return;
       }
