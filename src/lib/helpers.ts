@@ -9,6 +9,7 @@ export const getURL = (path: string = '') => {
           process.env.NEXT_PUBLIC_VERCEL_URL.trim() !== ''
         ? process.env.NEXT_PUBLIC_VERCEL_URL
         : // If neither is set, default to localhost for local development.
+        //
           'https://pictoria-kappa.vercel.app/';
 
   // Trim the URL and remove trailing slash if exists.
