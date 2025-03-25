@@ -30,14 +30,14 @@ export async function generateImageAction(input: (z.infer<typeof ImageGeneration
         }
     }
 
-    const {data:  credits} = await getCredits();
-    if(!credits?.image_generation_count || credits.image_generation_count <= 0){
-        return {
-            error: "No credits available",
-            success: false,
-            data: null,
-        }
-    }
+    // const {data:  credits} = await getCredits();
+    // if(!credits?.image_generation_count || credits.image_generation_count <= 0){
+    //     return {
+    //         error: "No credits available",
+    //         success: false,
+    //         data: null,
+    //     }
+    // }
 
     const modelInput = input.model.startsWith(`${process.env.NEXT_PUBLIC_REPLICATE_USER_NAME}/`) ? 
     {
