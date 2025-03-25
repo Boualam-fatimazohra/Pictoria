@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Database } from '@datatypes.types';
 import { imageMeta } from "image-meta";
 import { randomUUID } from "crypto";
+import { getCredits } from "./credit-actions";
 
 const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
@@ -29,9 +30,14 @@ export async function generateImageAction(input: (z.infer<typeof ImageGeneration
         }
     }
 
-   
-    
-    // Force a positive credit count for testing
+    const {data:  credits} = await getCredits();
+    if(!credits?.image_generation_count || credits.image_generation_count <= 0){
+        return {
+            error: "No credits available",
+            success: false,
+            data: null,
+        }
+    }
 
     const modelInput = input.model.startsWith(`${process.env.NEXT_PUBLIC_REPLICATE_USER_NAME}/`) ? 
     {
@@ -101,68 +107,63 @@ export async function storeImages(data: storeImageInput[]){
     const uploadResults = [];
 
     for(const img of data){
-        try {
-            const arrayBuffer = await imgUrlToBlob(img.url);
-            
-            const {width, height, type} = imageMeta(new Uint8Array(arrayBuffer));
+        const arrayBuffer = await imgUrlToBlob(img.url);
+         const {width, height, type} = imageMeta(new Uint8Array(arrayBuffer));
 
-            const fileName = `image_${randomUUID()}.${type}`
-            const filePath = `${user.id}/${fileName}`
+         const fileName = `image_${randomUUID()}.${type}`
+         const filePath = `${user.id}/${fileName}`
 
-            // Modifiez ici le nom du bucket
-            const {error: storageError} = await supabase.storage.from('generated-images').upload(
-               filePath, arrayBuffer, {
-                   contentType: `image/${type}`, 
-                   cacheControl: '3600',
-                   upsert: false,
-               }
-            )
-            
-            if(storageError){
-               console.error('Storage upload error:', storageError);
-               uploadResults.push({
-                   fileName,
-                   error: storageError.message,
-                   success: false,
-                   data: null,
-               })
-               continue;
+         const {error: storageError} = await supabase.storage.from('generated-images').upload(
+            filePath, arrayBuffer, {
+                contentType: `image/${type}`, 
+                cacheControl: '3600',
+                upsert: false,
             }
+         )
+         
+         if(storageError){
+            uploadResults.push({
+                fileName,
+                error: storageError.message,
+                success: false,
+                data: null,
+            })
+            continue;
+         }
 
-            // Insertion dans la table
-            const {data:dbData, error: dbError} = await supabase.from('generated_images').insert([{
-                user_id: user.id,
-                model: img.model,
-                prompt: img.prompt,
-                aspect_ratio: img.aspect_ratio,
-                guidance: img.guidance,
-                num_inference_steps: img.num_inference_steps,
-                output_format: img.output_format,
-                image_name: fileName,
-                width,
-                height
-            }]).select()
+         const {data:dbData, error: dbError} = await supabase.from('generated_images').insert([{
+            user_id: user.id,
+            model: img.model,
+            prompt: img.prompt,
+            aspect_ratio: img.aspect_ratio,
+            guidance: img.guidance,
+            num_inference_steps: img.num_inference_steps,
+            output_format: img.output_format,
+            image_name: fileName,
+            width,
+            height
+         }]).select()
+         
 
-            if(dbError){
-               console.error('Database insert error:', dbError);
-               uploadResults.push({
-                   fileName,
-                   error: dbError.message,
-                   success: !dbError,
-                   data: dbData || null,
-               })
-            }
-
-        } catch (error) {
-            console.error('Global error:', error);
-        }
+         if(dbError){
+            uploadResults.push({
+                fileName,
+                error: dbError.message,
+                success: !dbError,
+                data: dbData || null,
+            })
+         }
     }
+
 
     return {
         error: null,
         success: true,
         data: {results: uploadResults}
-    }
+     }
+
+
+
 }
 
 export async function getImages(limit?: number){
