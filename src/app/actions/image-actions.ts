@@ -32,7 +32,6 @@ export async function generateImageAction(input: (z.infer<typeof ImageGeneration
    
     
     // Force a positive credit count for testing
-    const credits = { image_generation_count: 100 };
 
     const modelInput = input.model.startsWith(`${process.env.NEXT_PUBLIC_REPLICATE_USER_NAME}/`) ? 
     {
