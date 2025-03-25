@@ -8,7 +8,7 @@ import {
 } from "../ui/card";
 import Link from "next/link";
 import { Button } from "../ui/button";
-import { CreditCardIcon, PlusIcon, Wand2Icon } from "lucide-react";
+import { PlusIcon, Wand2Icon } from "lucide-react";
 
 const QuickActions = () => {
   return (

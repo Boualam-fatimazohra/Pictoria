@@ -2,7 +2,6 @@
 
 import {
 
-  CreditCard,
   Frame,
   Image,
   Images,
