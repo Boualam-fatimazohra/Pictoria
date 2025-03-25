@@ -29,18 +29,7 @@ export async function generateImageAction(input: (z.infer<typeof ImageGeneration
         }
     }
 
-    // Option 2: Bypass credit check for testing
-    // Instead of checking actual credits, we'll assume credits are available
-    /*
-    const {data: credits} = await getCredits();
-    if(!credits?.image_generation_count || credits.image_generation_count <= 0){
-        return {
-            error: "No credits available",
-            success: false,
-            data: null,
-        }
-    }
-    */
+   
     
     // Force a positive credit count for testing
     const credits = { image_generation_count: 100 };
