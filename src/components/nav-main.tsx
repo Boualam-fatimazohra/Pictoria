@@ -46,11 +46,7 @@ const navItems = [
     url: "/gallery",
     icon: Images,
   },
-  {
-    title: "Billing",
-    url: "/billing",
-    icon: CreditCard,
-  },
+  
   {
     title: "Settings",
     url: "/account-settings",

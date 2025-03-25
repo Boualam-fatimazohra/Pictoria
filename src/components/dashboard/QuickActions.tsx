@@ -29,11 +29,6 @@ const QuickActions = () => {
             <PlusIcon className="mr-2 h-4 w-4" /> Train New Model
           </Button>
         </Link>
-        <Link href="/billing" className="w-full">
-          <Button variant="secondary" className="w-full">
-            <CreditCardIcon className="mr-2 h-4 w-4" /> Billing
-          </Button>
-        </Link>
       </CardContent>
     </Card>
   );
