@@ -13,7 +13,6 @@ interface GalleryProps{
 }
 
 const GalleryComponent = ({images}: GalleryProps) => {
-
     const [selectedImage, setselectedImage] = useState<ImageProps | null>(null)
 
     if(images.length === 0){
@@ -27,22 +26,28 @@ const GalleryComponent = ({images}: GalleryProps) => {
         <div className='columns-1 sm:columns-2 lg:columns-3  xl:columns-4 gap-4 space-y-4'>
              {
                 images.map((image, index) => {
-
                    return <div key={index}>
                         <div className='relative group overflow-hidden cursor-pointer transition-transform'
                         onClick={() => setselectedImage(image)}
                         >
+                            <div className='absolute inset-0 bg-black opacity-0 transition-opacity duration-300 group-hover:opacity-70 rounded'>
+                                <div className='flex items-center justify-center h-full'>
+                                    <p className='text-primary-foreground text-lg font-semibold'>View Details</p>
+                                </div>
+                            </div>
 
-<div className='absolute inset-0 bg-black opacity-0 transition-opacity duration-300 group-hover:opacity-70 rounded'>
-   <div className='flex items-center justify-center h-full'>
-    <p className='text-primary-foreground text-lg font-semibold'>View Details</p>
-   </div>
-</div>
-
-
-                             <Image src={image.url || "/placeholder.svg"} alt={image.prompt || ""} width={image.width || 0} height={image.height || 0} className='object-cover rounded' />
+                            <Image 
+                                src={image.url || "/placeholder.svg"} 
+                                alt={image.prompt || ""} 
+                                width={image.width || 400} 
+                                height={image.height || 400} 
+                                className='object-cover rounded' 
+                                onError={(e) => {
+                                    console.error('Image load error:', e);
+                                    (e.target as HTMLImageElement).src = '/placeholder.svg';
+                                }}
+                            />
                         </div>
-
                     </div>
                 })
              }
@@ -51,10 +56,7 @@ const GalleryComponent = ({images}: GalleryProps) => {
         {
             selectedImage &&  <ImageDialog image={selectedImage} onClose={() => setselectedImage(null)}  />
         }
-
-        
-        
-       </section>
+    </section>
   )
 }
 

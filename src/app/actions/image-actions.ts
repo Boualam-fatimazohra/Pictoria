@@ -196,26 +196,23 @@ export async function getImages(limit?: number){
     const imageWithUrls = await Promise.all(
         data.map(async (image: Database["public"]["Tables"]["generated_images"]["Row"]) => {
             const { data } = await supabase.storage
-  .from('generated_images')
-  .createSignedUrl(`${user.id}/${image.image_name}`, 3600)
+                .from('generated-images')
+                .createSignedUrl(`${user.id}/${image.image_name}`, 3600)
 
-  return {
-    ...image,
-    url: data?.signedUrl
-  }
+            console.log(`Generated signed URL: ${data?.signedUrl}`); // Add this line for debugging
+
+            return {
+                ...image,
+                url: data?.signedUrl
+            }
         })
     )
 
-
-  
     return {
         error: null,
         success: true,
         data: imageWithUrls || null
-     }
-
-
-
+    }
 }
 
 
